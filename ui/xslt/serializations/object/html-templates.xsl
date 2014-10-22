@@ -13,18 +13,18 @@
 		<xsl:element name="{if (ancestor::subtype) then 'h4' else 'h3'}">
 			<xsl:value-of select="numishare:regularize_node(local-name(), $lang)"/>
 		</xsl:element>
-		<ul>
+		<dl class="dl-horizontal">
 			<xsl:apply-templates select="*:reference[not(child::*[local-name()='objectXMLWrap'])]|*:citation" mode="descMeta"/>
 			<xsl:apply-templates select="*:reference/*[local-name()='objectXMLWrap']"/>
-		</ul>
+		</dl>
 	</xsl:template>
 	<xsl:template match="nuds:physDesc[child::*]">
 		<xsl:element name="{if (ancestor::subtype) then 'h4' else 'h3'}">
 			<xsl:value-of select="numishare:regularize_node(local-name(), $lang)"/>
 		</xsl:element>
-		<ul>
-			<xsl:apply-templates mode="descMeta"/>
-		</ul>
+		<dl class="dl-horizontal">
+			<xsl:apply-templates select="descendant::*[not(child::*)]" mode="descMeta"/>
+		</dl>
 	</xsl:template>
 
 	<xsl:template match="nuds:typeDesc">
@@ -35,17 +35,18 @@
 		<xsl:if test="string($typeDesc_resource)">
 			<p>Source: <a href="{$typeDesc_resource}" rel="nm:type_series_item"><xsl:value-of select="$nudsGroup//object[@xlink:href = $typeDesc_resource]/nuds:nuds/nuds:descMeta/nuds:title"/></a></p>
 		</xsl:if>
-		<ul>
+		<dl class="dl-horizontal">
+			<!-- suppress obverse, reverse, geographic, and authority in subtypes -->
 			<xsl:choose>
 				<xsl:when test="ancestor::subtype">
 					<xsl:apply-templates select="*[not(local-name()='obverse' or local-name()='reverse' or local-name()='authority' or local-name()='geographic' or local-name()='date' or
 						local-name()='dateRange')]" mode="descMeta"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:apply-templates select="*" mode="descMeta"/>
+					<xsl:apply-templates select="descendant::*[not(child::*)]" mode="descMeta"/>
 				</xsl:otherwise>
 			</xsl:choose>
-		</ul>
+		</dl>
 	</xsl:template>
 
 	<xsl:template match="*" mode="descMeta">
@@ -66,61 +67,70 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
-				<li>
-					<!-- display label first for non-Arabic languages -->
-					<xsl:if test="not($lang='ar')">
-						<b>
-							<xsl:value-of select="numishare:regularize_node($field, $lang)"/>
-							<xsl:text>: </xsl:text>
-						</b>
-					</xsl:if>
-					<!-- create link from facet, if applicable -->
-					<!-- pull language from nomisma, if available -->
-					<xsl:variable name="value">
-						<xsl:choose>
-							<xsl:when test="string($lang) and contains($href, 'nomisma.org')">
-								<xsl:value-of select="numishare:getNomismaLabel($rdf/*[@rdf:about=$href], $lang)"/>
-							</xsl:when>
-							<xsl:when test="contains($href, 'geonames.org') and not(string(.))">
-								<xsl:variable name="geonameId" select="tokenize($href, '/')[4]"/>
-								<xsl:choose>
-									<xsl:when test="number($geonameId)">
-										<xsl:variable name="geonames_data" as="element()*">
-											<results>
-												<xsl:copy-of select="document(concat($geonames-url, '/get?geonameId=', $geonameId, '&amp;username=', $geonames_api_key, '&amp;style=full'))"/>
-											</results>
-										</xsl:variable>
-										<xsl:variable name="label">
-											<xsl:variable name="countryCode" select="$geonames_data//countryCode"/>
-											<xsl:variable name="countryName" select="$geonames_data//countryName"/>
-											<xsl:variable name="name" select="$geonames_data//name"/>
-											<xsl:variable name="adminName1" select="$geonames_data//adminName1"/>
-											<xsl:variable name="fcode" select="$geonames_data//fcode"/>
-											<!-- set a value equivalent to AACR2 standard for US, AU, CA, and GB.  This equation deviates from AACR2 for Malaysia since standard abbreviations for territories cannot be found -->
-											<xsl:value-of select="if ($countryCode = 'US' or $countryCode = 'AU' or $countryCode = 'CA') then if ($fcode = 'ADM1') then $name else concat($name, ' (',
-												$abbreviations//country[@code=$countryCode]/place[. = $adminName1]/@abbr, ')') else if ($countryCode= 'GB') then  if ($fcode = 'ADM1') then $name else
-												concat($name, ' (', $adminName1, ')') else if ($fcode = 'PCLI') then $name else concat($name, ' (', $countryName, ')')"/>
-										</xsl:variable>
-										<xsl:value-of select="$label"/>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:value-of select="normalize-space(.)"/>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:choose>
-									<xsl:when test="not(string(.))">
-										<xsl:value-of select="numishare:getNomismaLabel($rdf/*[@rdf:about=$href], 'en')"/>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:value-of select="normalize-space(.)"/>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:variable>
 
+				<!-- display label first for non-Arabic languages -->
+				<dt>
+					<xsl:choose>
+						<xsl:when test="ancestor::nuds:obverse">
+							<xsl:value-of select="numishare:regularize_node($field, $lang)"/> (<xsl:value-of select="substring(numishare:regularize_node('obverse', $lang), 1, 3)"/>.) </xsl:when>
+						<xsl:when test="ancestor::nuds:reverse">
+							<xsl:value-of select="numishare:regularize_node($field, $lang)"/> (<xsl:value-of select="substring(numishare:regularize_node('reverse', $lang), 1, 3)"/>.) </xsl:when>
+						<xsl:when test="ancestor::nuds:dateOnObject">
+							<xsl:value-of select="numishare:regularize_node('dob', $lang)"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="numishare:regularize_node($field, $lang)"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</dt>
+
+				<!-- create link from facet, if applicable -->
+				<!-- pull language from nomisma, if available -->
+				<xsl:variable name="value">
+					<xsl:choose>
+						<xsl:when test="string($lang) and contains($href, 'nomisma.org')">
+							<xsl:value-of select="numishare:getNomismaLabel($rdf/*[@rdf:about=$href], $lang)"/>
+						</xsl:when>
+						<xsl:when test="contains($href, 'geonames.org') and not(string(.))">
+							<xsl:variable name="geonameId" select="tokenize($href, '/')[4]"/>
+							<xsl:choose>
+								<xsl:when test="number($geonameId)">
+									<xsl:variable name="geonames_data" as="element()*">
+										<results>
+											<xsl:copy-of select="document(concat($geonames-url, '/get?geonameId=', $geonameId, '&amp;username=', $geonames_api_key, '&amp;style=full'))"/>
+										</results>
+									</xsl:variable>
+									<xsl:variable name="label">
+										<xsl:variable name="countryCode" select="$geonames_data//countryCode"/>
+										<xsl:variable name="countryName" select="$geonames_data//countryName"/>
+										<xsl:variable name="name" select="$geonames_data//name"/>
+										<xsl:variable name="adminName1" select="$geonames_data//adminName1"/>
+										<xsl:variable name="fcode" select="$geonames_data//fcode"/>
+										<!-- set a value equivalent to AACR2 standard for US, AU, CA, and GB.  This equation deviates from AACR2 for Malaysia since standard abbreviations for territories cannot be found -->
+										<xsl:value-of select="if ($countryCode = 'US' or $countryCode = 'AU' or $countryCode = 'CA') then if ($fcode = 'ADM1') then $name else concat($name, ' (',
+											$abbreviations//country[@code=$countryCode]/place[. = $adminName1]/@abbr, ')') else if ($countryCode= 'GB') then  if ($fcode = 'ADM1') then $name else
+											concat($name, ' (', $adminName1, ')') else if ($fcode = 'PCLI') then $name else concat($name, ' (', $countryName, ')')"/>
+									</xsl:variable>
+									<xsl:value-of select="$label"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="normalize-space(.)"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:choose>
+								<xsl:when test="not(string(.))">
+									<xsl:value-of select="numishare:getNomismaLabel($rdf/*[@rdf:about=$href], 'en')"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="normalize-space(.)"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
+				<dd>
 					<xsl:choose>
 						<xsl:when test="not(ancestor::nuds:typeDesc/@xlink:href) and not(ancestor::nuds:refDesc) and not(@xlink:href)">
 							<span>
@@ -182,7 +192,7 @@
 							<xsl:value-of select="numishare:regularize_node($field, $lang)"/>
 						</b>
 					</xsl:if>
-				</li>
+				</dd>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:choose>
@@ -313,6 +323,38 @@
 		</div>
 		<hr/>
 	</xsl:template>
+	
+	<!-- ************** PROCESS GROUP OF SPARQL RESULTS FROM NOMISMA TO DISPLAY IMAGES ************** -->
+	<xsl:template match="object" mode="results">
+		<xsl:variable name="position" select="position()"/>
+		<!-- obverse -->
+		<xsl:if test="obvRef">
+			<img src="{obvRef}" style="max-width:100%">
+				<xsl:if test="$position &gt; 1">
+					<xsl:attribute name="style">display:none</xsl:attribute>
+				</xsl:if>
+			</img>
+			<br/>
+		</xsl:if>
+		
+		<!-- reverse-->
+		<xsl:if test="revRef">
+			<img src="{revRef}" style="max-width:100%">
+				<xsl:if test="$position &gt; 1">
+					<xsl:attribute name="style">display:none</xsl:attribute>
+				</xsl:if>
+			</img>
+		</xsl:if>
+		<!-- combined -->
+		<xsl:if test="comRef">
+			<img src="{comRef}" style="max-width:100%">
+				<xsl:if test="$position &gt; 1">
+					<xsl:attribute name="style">display:none</xsl:attribute>
+				</xsl:if>
+			</img>
+		</xsl:if>
+	</xsl:template>
+	
 
 	<!-- ************** PROCESS MODS RECORD INTO CHICAGO MANUAL OF STYLE CITATION ************** -->
 	<xsl:template name="mods-citation">

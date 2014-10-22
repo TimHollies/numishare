@@ -133,6 +133,15 @@
 			<xsl:copy-of select="document($rdf_url)/rdf:RDF/*"/>
 		</rdf:RDF>
 	</xsl:variable>
+	
+	<!-- get block of images from SPARQL endpoint, via nomisma API -->
+	<xsl:variable name="sparqlResult" as="element()*">
+		<xsl:if test="string($sparql_endpoint) and //config/collection_type='cointype'">
+			<xsl:variable name="service"
+				select="concat('http://nomisma.org/apis/numishareResults?identifiers=', $id, '&amp;baseUri=', //config/uri_space)"/>
+			<xsl:copy-of select="document($service)/response"/>
+		</xsl:if>
+	</xsl:variable>
 
 	<xsl:template match="/">
 		<xsl:choose>

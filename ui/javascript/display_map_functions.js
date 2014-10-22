@@ -22,7 +22,11 @@ $(document).ready(function () {
 	
 	
 	function init() {
-		if (collection_type != 'object') {
+		//force regular map
+		if ($('#mapcontainer').html().length == 0) {
+			initialize_map(id, path, lang);
+		}
+		/*if (collection_type != 'object') {
 			if ($('#map').html().length == 0) {
 				initialize_timemap(id, path, lang);
 			}
@@ -30,7 +34,7 @@ $(document).ready(function () {
 			if ($('#mapcontainer').html().length == 0) {
 				initialize_map(id, path, lang);
 			}
-		}
+		}*/
 	}
 });
 

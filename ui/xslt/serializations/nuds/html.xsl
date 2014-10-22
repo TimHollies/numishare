@@ -44,17 +44,28 @@
 									</xsl:if>
 									<xsl:value-of select="normalize-space(nuds:descMeta/nuds:title)"/>
 								</h1>
-								<a href="#examples"><xsl:value-of select="numishare:normalizeLabel('display_examples', $lang)"/></a> | <a href="#charts"><xsl:value-of
-										select="numishare:normalizeLabel('display_quantitative', $lang)"/></a>
+								<xsl:choose>
+									<xsl:when test="count($subtypes//subtype) &gt; 0">
+										<a href="#variants">
+											<xsl:text>Variants</xsl:text>
+										</a>
+									</xsl:when>
+									<xsl:otherwise>
+										<a href="#examples">
+											<xsl:value-of select="numishare:normalizeLabel('display_examples', $lang)"/>
+										</a>
+									</xsl:otherwise>
+								</xsl:choose>
+								<!--| <a href="#charts"><xsl:value-of
+										select="numishare:normalizeLabel('display_quantitative', $lang)"/></a>-->
 							</div>
 						</div>
 						<xsl:call-template name="nuds_content"/>
 						<!-- handle subtypes if they exist -->
 						<xsl:choose>
 							<xsl:when test="count($subtypes//subtype) &gt; 0">
-								<hr/>
-								<a name="examples"/>
-								<h3>Variants</h3>
+								<hr/>								
+								<h3 id="variants">Variants</h3>
 								<xsl:apply-templates select="$subtypes//subtype">
 									<xsl:with-param name="uri_space" select="//config/uri_space"/>
 								</xsl:apply-templates>
@@ -67,13 +78,13 @@
 								</xsl:if>
 							</xsl:otherwise>
 						</xsl:choose>	
-						<div class="row">
+						<!--<div class="row">
 							<div class="col-md-12">
 								<xsl:if test="$recordType='conceptual' and string($sparql_endpoint) and //config/collection_type='cointype'">
 									<xsl:call-template name="charts"/>
 								</xsl:if>
 							</div>
-						</div>
+						</div>-->
 					</xsl:when>
 					<xsl:when test="$recordType='physical'">
 						<xsl:choose>
@@ -214,10 +225,15 @@
 				<xsl:choose>
 					<xsl:when test="$recordType='conceptual'">
 						<div class="row">
-							<div class="col-md-6">
+							<div class="col-md-5">
 								<xsl:call-template name="metadata-container"/>
 							</div>
-							<div class="col-md-6">
+							<div class="col-md-2">
+								<div class="text-center">
+									<xsl:apply-templates select="$sparqlResult//object" mode="results"/>
+								</div>
+							</div>
+							<div class="col-md-5">
 								<xsl:call-template name="map-container"/>
 							</div>
 						</div>
@@ -303,14 +319,15 @@
 		</h3>
 		<xsl:choose>
 			<xsl:when test="$recordType='conceptual'">
-				<div id="timemap">
+				<!--<div id="timemap">
 					<div id="mapcontainer">
 						<div id="map"/>
 					</div>
 					<div id="timelinecontainer">
 						<div id="timeline"/>
 					</div>
-				</div>
+				</div>-->
+				<div id="mapcontainer"/>
 			</xsl:when>
 			<xsl:otherwise>
 				<div id="mapcontainer"/>
@@ -394,24 +411,24 @@
 		<h3>
 			<xsl:value-of select="numishare:regularize_node(local-name(), $lang)"/>
 		</h3>
-		<ul>
+		<dl class="dl-horizontal">
 			<xsl:apply-templates/>
-		</ul>
+		</dl>
 	</xsl:template>
 
 	<xsl:template match="nuds:subject">
-		<li>
-			<b><xsl:value-of select="if (string(@localType)) then @localType else numishare:regularize_node(local-name(), $lang)"/>: </b>
-			<a href="{$display_path}results?q={if (string(@localType)) then @localType else 'subject'}_facet:&#x022;{normalize-space(.)}&#x022;{if (string($lang)) then concat('&amp;lang=', $lang) else
-				''}">
+		<dt><xsl:value-of select="if (string(@localType)) then numishare:regularize_node(@localType, $lang) else numishare:regularize_node(local-name(), $lang)"/></dt>
+		<dd>
+			<a
+				href="{$display_path}results?q={if (string(@localType)) then @localType else 'subject'}_facet:&#x022;{normalize-space(.)}&#x022;{if (string($lang)) then concat('&amp;lang=', $lang) else ''}">
 				<xsl:value-of select="."/>
 			</a>
 			<xsl:if test="string(@xlink:href)">
-				<a rel="dcterms:subject" href="{@xlink:href}" target="_blank">
+				<a href="{@xlink:href}" target="_blank">
 					<img src="{$include_path}/images/external.png" alt="external link" class="external_link"/>
 				</a>
 			</xsl:if>
-		</li>
+		</dd>
 	</xsl:template>
 
 	<xsl:template match="nuds:note">
