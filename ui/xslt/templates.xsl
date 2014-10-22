@@ -178,9 +178,10 @@
 						</a>
 					</li>
 				</xsl:for-each>
-				<li>
-					<a href="http://numismatics.org">ANS Home</a>
-				</li>
+				<!-- navbar addendum -->
+				<xsl:for-each slect="//config/header/li">
+					<xsl:copy-of select="."/>
+				</xsl:for-each>				
 				<!-- display the language switching menu when 2 or more languages are enabled -->
 				<xsl:call-template name="languages"/>
 			</xsl:otherwise>
