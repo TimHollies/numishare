@@ -37,10 +37,10 @@
 	</xsl:template>
 
 	<xsl:template name="index">
-		<div class="jumbotron">
+		<!--<div class="jumbotron">
 			<div class="container">
 				<div class="row">
-					<!-- display title and description in the jumbotron, including featured object, if available -->
+					<!-\- display title and description in the jumbotron, including featured object, if available -\->
 					<xsl:choose>
 						<xsl:when test="features_enabled = true()">
 							<div class="col-md-9">
@@ -60,12 +60,18 @@
 					</xsl:choose>
 				</div>
 			</div>
-		</div>	
-		<div class="container-fluid">
+		</div>-->	
+		
+		<div class="container index">
 			<xsl:if test="$lang='ar'">
 				<xsl:attribute name="style">direction: rtl;</xsl:attribute>							
 			</xsl:if>
 			<div class="row">
+				<div class="col-md-12">
+					<img src="{$include_path}/images/banner.jpg" style="width:100%"/>
+				</div>
+			</div>
+			<div class="row content">
 				<div class="col-md-9">					
 					<xsl:choose>
 						<xsl:when test="string($lang)">
