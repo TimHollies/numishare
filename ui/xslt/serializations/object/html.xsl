@@ -236,8 +236,9 @@
 						<xsl:call-template name="generic_head"/>
 						<xsl:choose>
 							<xsl:when test="$recordType='physical'">
-								<script type="text/javascript" src="http://openlayers.org/api/2.12/OpenLayers.js"/>
-								<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"/>
+								<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+								<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"/>					
+								<script type="text/javascript" src="{$include_path}/javascript/leaflet.ajax.min.js"/>
 								<script type="text/javascript" src="{$include_path}/javascript/display_map_functions.js"/>
 							</xsl:when>
 							<!-- coin-type CSS and JS dependencies -->
@@ -246,19 +247,15 @@
 								<link rel="stylesheet" href="{$include_path}/css/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen"/>
 								<script type="text/javascript" src="{$include_path}/javascript/jquery.fancybox.pack.js?v=2.1.5"/>
 								<script type="text/javascript" src="{$include_path}/javascript/highcharts.js"/>
-								<script type="text/javascript" src="{$include_path}/javascript/modules/exporting.js"/>
-								<script type="text/javascript" src="{$include_path}/javascript/display_map_functions.js"/>
+								<script type="text/javascript" src="{$include_path}/javascript/modules/exporting.js"/>								
 								<script type="text/javascript" src="{$include_path}/javascript/display_functions.js"/>
 								<script type="text/javascript" src="{$include_path}/javascript/visualize_functions.js"/>
 
 								<!-- mapping -->
-								<script type="text/javascript" src="http://openlayers.org/api/2.12/OpenLayers.js"/>
-								<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"/>
-								<script type="text/javascript" src="{$include_path}/javascript/mxn.js"/>
-								<script type="text/javascript" src="{$include_path}/javascript/timeline-2.3.0.js"/>
-								<link type="text/css" href="{$include_path}/css/timeline-2.3.0.css" rel="stylesheet"/>
-								<script type="text/javascript" src="{$include_path}/javascript/timemap_full.pack.js"/>
-								<script type="text/javascript" src="{$include_path}/javascript/param.js"/>
+								<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+								<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"/>					
+								<script type="text/javascript" src="{$include_path}/javascript/leaflet.ajax.min.js"/>
+								<script type="text/javascript" src="{$include_path}/javascript/display_map_functions.js"/>
 							</xsl:when>
 							<!-- hoard CSS and JS dependencies -->
 							<xsl:when test="$recordType='hoard'">
@@ -291,13 +288,16 @@
 								<xsl:value-of select="$collection_type"/>
 							</span>
 							<span id="path">
-								<xsl:value-of select="$display_path"/>
+								<xsl:value-of select="concat($display_path, 'id/')"/>
 							</span>
 							<span id="include_path">
 								<xsl:value-of select="$include_path"/>
 							</span>
 							<span id="pipeline">
 								<xsl:value-of select="$pipeline"/>
+							</span>
+							<span id="mapboxKey">
+								<xsl:value-of select="//config/mapboxKey"/>
 							</span>
 						</div>
 					</body>
