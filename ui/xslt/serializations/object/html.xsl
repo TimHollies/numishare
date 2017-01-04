@@ -284,8 +284,7 @@
 								<link rel="stylesheet" href="{$include_path}/css/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen"/>
 								<script type="text/javascript" src="{$include_path}/javascript/jquery.fancybox.pack.js?v=2.1.5"/>
 								<script type="text/javascript" src="{$include_path}/javascript/highcharts.js"/>
-								<script type="text/javascript" src="{$include_path}/javascript/modules/exporting.js"/>
-								<script type="text/javascript" src="{$include_path}/javascript/display_map_functions.js"/>
+								<script type="text/javascript" src="{$include_path}/javascript/modules/exporting.js"/>								
 								<script type="text/javascript" src="{$include_path}/javascript/display_functions.js"/>
 								<script type="text/javascript" src="{$include_path}/javascript/visualize_functions.js"/>
 
