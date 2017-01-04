@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mets="http://www.loc.gov/METS/"
-	xmlns:numishare="https://github.com/ewg118/numishare" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:nuds="http://nomisma.org/nuds"
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:mets="http://www.loc.gov/METS/" xmlns:numishare="https://github.com/ewg118/numishare" xmlns:res="http://www.w3.org/2005/sparql-results#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:nuds="http://nomisma.org/nuds"
 	exclude-result-prefixes="#all" version="2.0">
 
 	<!-- quantitative analysis parameters -->
-	<xsl:param name="measurement" select="doc('input:request')/request/parameters/parameter[name='measurement']/value"/>
-	<xsl:param name="numericType" select="doc('input:request')/request/parameters/parameter[name='numericType']/value"/>
-	<xsl:param name="interval" select="doc('input:request')/request/parameters/parameter[name='interval']/value"/>
-	<xsl:param name="fromDate" select="doc('input:request')/request/parameters/parameter[name='fromDate']/value"/>
-	<xsl:param name="toDate" select="doc('input:request')/request/parameters/parameter[name='toDate']/value"/>
-	<xsl:param name="sparqlQuery" select="doc('input:request')/request/parameters/parameter[name='sparqlQuery']/value"/>
+	<xsl:param name="measurement" select="doc('input:request')/request/parameters/parameter[name = 'measurement']/value"/>
+	<xsl:param name="numericType" select="doc('input:request')/request/parameters/parameter[name = 'numericType']/value"/>
+	<xsl:param name="interval" select="doc('input:request')/request/parameters/parameter[name = 'interval']/value"/>
+	<xsl:param name="fromDate" select="doc('input:request')/request/parameters/parameter[name = 'fromDate']/value"/>
+	<xsl:param name="toDate" select="doc('input:request')/request/parameters/parameter[name = 'toDate']/value"/>
+	<xsl:param name="sparqlQuery" select="doc('input:request')/request/parameters/parameter[name = 'sparqlQuery']/value"/>
 	<xsl:variable name="tokenized_sparqlQuery" as="item()*">
 		<xsl:sequence select="tokenize($sparqlQuery, '\|')"/>
 	</xsl:variable>
 	<xsl:variable name="duration" select="number($toDate) - number($fromDate)"/>
+
+	<!-- whether there are coin types, findspots, annotations, executed in XPL -->
+	<xsl:variable name="hasTypes" select="//res:sparql[1]/res:boolean" as="xs:boolean"/>
+	<xsl:variable name="hasFindspots" select="//res:sparql[2]/res:boolean" as="xs:boolean"/>
+	<xsl:variable name="hasAnnotations" as="xs:boolean">
+		<xsl:choose>
+			<xsl:when test="/content/res:sparql[3][descendant::res:result]">true</xsl:when>
+			<xsl:otherwise>false</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
 
 	<xsl:template name="nuds">
 		<xsl:apply-templates select="/content/nuds:nuds"/>
@@ -23,7 +34,8 @@
 		<xsl:if test="$mode = 'compare'">
 			<div class="compare_options">
 				<small>
-					<a href="compare_results?q={$q}&amp;start={$start}&amp;image={$image}&amp;side={$side}&amp;mode=compare{if (string($lang)) then concat('&amp;lang=', $lang) else ''}"
+					<a
+						href="compare_results?q={$q}&amp;start={$start}&amp;image={$image}&amp;side={$side}&amp;mode=compare{if (string($lang)) then concat('&amp;lang=', $lang) else ''}"
 						class="back_results">« Search results</a>
 					<xsl:text> | </xsl:text>
 					<a href="id/{$id}">Full record »</a>
@@ -35,9 +47,9 @@
 			<xsl:when test="not($mode = 'compare')">
 				<xsl:call-template name="icons"/>
 				<xsl:choose>
-					<xsl:when test="$recordType='conceptual'">
+					<xsl:when test="$recordType = 'conceptual'">
 						<div class="row">
-							<div class="col-md-12">								
+							<div class="col-md-12">
 								<h1 id="object_title" property="skos:prefLabel">
 									<xsl:if test="string(nuds:descMeta/nuds:title/@xml:lang)">
 										<xsl:attribute name="lang" select="nuds:descMeta/nuds:title/@xml:lang"/>
@@ -64,20 +76,18 @@
 						<!-- handle subtypes if they exist -->
 						<xsl:choose>
 							<xsl:when test="count($subtypes//subtype) &gt; 0">
-								<hr/>								
+								<hr/>
 								<h3 id="variants">Variants</h3>
 								<xsl:apply-templates select="$subtypes//subtype">
 									<xsl:with-param name="uri_space" select="//config/uri_space"/>
 								</xsl:apply-templates>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:if test="string($sparql_endpoint)">
-									<xsl:if test="string($sparql_endpoint)">
-										<xsl:copy-of select="document(concat($request-uri, 'sparql?uri=', //config/uri_space, $id, '&amp;template=display'))/div[@id='examples']"/>
-									</xsl:if>
+								<xsl:if test="$hasTypes = true()">
+									<xsl:apply-templates select="document(concat($request-uri, 'apis/type-examples?id=', $id))/*" mode="type-examples"/>
 								</xsl:if>
 							</xsl:otherwise>
-						</xsl:choose>	
+						</xsl:choose>
 						<!--<div class="row">
 							<div class="col-md-12">
 								<xsl:if test="$recordType='conceptual' and string($sparql_endpoint) and //config/collection_type='cointype'">
@@ -86,7 +96,7 @@
 							</div>
 						</div>-->
 					</xsl:when>
-					<xsl:when test="$recordType='physical'">
+					<xsl:when test="$recordType = 'physical'">
 						<xsl:choose>
 							<xsl:when test="$orientation = 'vertical'">
 								<div class="row">
@@ -223,7 +233,7 @@
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:choose>
-					<xsl:when test="$recordType='conceptual'">
+					<xsl:when test="$recordType = 'conceptual'">
 						<div class="row">
 							<div class="col-md-5">
 								<xsl:call-template name="metadata-container"/>
@@ -318,7 +328,7 @@
 			<xsl:value-of select="numishare:normalizeLabel('display_map', $lang)"/>
 		</h3>
 		<xsl:choose>
-			<xsl:when test="$recordType='conceptual'">
+			<xsl:when test="$recordType = 'conceptual'">
 				<!--<div id="timemap">
 					<div id="mapcontainer">
 						<div id="map"/>
@@ -407,7 +417,7 @@
 		</ul>
 	</xsl:template>
 
-	<xsl:template match="nuds:subjectSet|nuds:noteSet">
+	<xsl:template match="nuds:subjectSet | nuds:noteSet">
 		<h3>
 			<xsl:value-of select="numishare:regularize_node(local-name(), $lang)"/>
 		</h3>
@@ -417,7 +427,15 @@
 	</xsl:template>
 
 	<xsl:template match="nuds:subject">
-		<dt><xsl:value-of select="if (string(@localType)) then numishare:regularize_node(@localType, $lang) else numishare:regularize_node(local-name(), $lang)"/></dt>
+		<dt>
+			<xsl:value-of
+				select="
+					if (string(@localType)) then
+						numishare:regularize_node(@localType, $lang)
+					else
+						numishare:regularize_node(local-name(), $lang)"
+			/>
+		</dt>
 		<dd>
 			<a
 				href="{$display_path}results?q={if (string(@localType)) then @localType else 'subject'}_facet:&#x022;{normalize-space(.)}&#x022;{if (string($lang)) then concat('&amp;lang=', $lang) else ''}">
@@ -451,8 +469,8 @@
 			</ul>
 		</li>
 	</xsl:template>
-	
-	<xsl:template match="nuds:descripton|nuds:legend" mode="physical">
+
+	<xsl:template match="nuds:descripton | nuds:legend" mode="physical">
 		<span property="{numishare:normalizeProperty($recordType, local-name())}">
 			<xsl:if test="@xml:lang">
 				<xsl:attribute name="lang" select="@xml:lang"/>
@@ -463,8 +481,8 @@
 
 	<xsl:template name="obverse_image">
 		<xsl:variable name="obverse_image">
-			<xsl:if test="string(//mets:fileGrp[@USE='obverse']/mets:file[@USE='reference']/mets:FLocat/@xlink:href)">
-				<xsl:value-of select="//mets:fileGrp[@USE='obverse']/mets:file[@USE='reference']/mets:FLocat/@xlink:href"/>
+			<xsl:if test="string(//mets:fileGrp[@USE = 'obverse']/mets:file[@USE = 'reference']/mets:FLocat/@xlink:href)">
+				<xsl:value-of select="//mets:fileGrp[@USE = 'obverse']/mets:file[@USE = 'reference']/mets:FLocat/@xlink:href"/>
 			</xsl:if>
 		</xsl:variable>
 
@@ -504,7 +522,8 @@
 				<!-- otherwise only display the image -->
 				<xsl:if test="string($obverse_image)">
 					<div class="reference_image">
-						<img src="{if (contains($obverse_image, 'http://')) then $obverse_image else concat($display_path, $obverse_image)}" property="foaf:depiction" alt="{$side}"/>
+						<img src="{if (contains($obverse_image, 'http://')) then $obverse_image else concat($display_path, $obverse_image)}"
+							property="foaf:depiction" alt="{$side}"/>
 					</div>
 				</xsl:if>
 			</xsl:otherwise>
@@ -513,8 +532,8 @@
 
 	<xsl:template name="reverse_image">
 		<xsl:variable name="reverse_image">
-			<xsl:if test="string(//mets:fileGrp[@USE='reverse']/mets:file[@USE='reference']/mets:FLocat/@xlink:href)">
-				<xsl:value-of select="//mets:fileGrp[@USE='reverse']/mets:file[@USE='reference']/mets:FLocat/@xlink:href"/>
+			<xsl:if test="string(//mets:fileGrp[@USE = 'reverse']/mets:file[@USE = 'reference']/mets:FLocat/@xlink:href)">
+				<xsl:value-of select="//mets:fileGrp[@USE = 'reverse']/mets:file[@USE = 'reference']/mets:FLocat/@xlink:href"/>
 			</xsl:if>
 		</xsl:variable>
 
@@ -554,7 +573,8 @@
 				<!-- otherwise only display the image -->
 				<xsl:if test="string($reverse_image)">
 					<div class="reference_image">
-						<img src="{if (contains($reverse_image, 'http://')) then $reverse_image else concat($display_path, $reverse_image)}" property="foaf:depiction" alt="{$side}"/>
+						<img src="{if (contains($reverse_image, 'http://')) then $reverse_image else concat($display_path, $reverse_image)}"
+							property="foaf:depiction" alt="{$side}"/>
 					</div>
 				</xsl:if>
 			</xsl:otherwise>
@@ -562,9 +582,9 @@
 	</xsl:template>
 
 	<xsl:template name="legend_image">
-		<xsl:if test="string(//mets:fileGrp[@USE='legend']/mets:file[@USE='reference']/mets:FLocat/@xlink:href)">
-			<xsl:variable name="src" select="//mets:fileGrp[@USE='legend']/mets:file[@USE='reference']/mets:FLocat/@xlink:href"/>
-			
+		<xsl:if test="string(//mets:fileGrp[@USE = 'legend']/mets:file[@USE = 'reference']/mets:FLocat/@xlink:href)">
+			<xsl:variable name="src" select="//mets:fileGrp[@USE = 'legend']/mets:file[@USE = 'reference']/mets:FLocat/@xlink:href"/>
+
 			<div class="reference_image">
 				<img src="{if (contains($src, 'http://')) then $src else concat($display_path, $src)}" alt="legend"/>
 			</div>
@@ -573,18 +593,21 @@
 
 	<!-- charts template -->
 	<xsl:template name="charts">
-		<xsl:variable name="axis" select="document(concat($request-uri, 'sparql?constraints=', encode-for-uri(concat('nm:type_series_item &lt;', //config/uri_space, $id, '&gt;')),
+		<xsl:variable name="axis"
+			select="document(concat($request-uri, 'sparql?constraints=', encode-for-uri(concat('nm:type_series_item &lt;', //config/uri_space, $id, '&gt;')),
 			'&amp;template=avgMeasurement&amp;measurement=axis'))"/>
-		<xsl:variable name="diameter" select="document(concat($request-uri, 'sparql?constraints=', encode-for-uri(concat('nm:type_series_item &lt;', //config/uri_space, $id, '&gt;')),
+		<xsl:variable name="diameter"
+			select="document(concat($request-uri, 'sparql?constraints=', encode-for-uri(concat('nm:type_series_item &lt;', //config/uri_space, $id, '&gt;')),
 			'&amp;template=avgMeasurement&amp;measurement=diameter'))"/>
-		<xsl:variable name="weight" select="document(concat($request-uri, 'sparql?constraints=', encode-for-uri(concat('nm:type_series_item &lt;', //config/uri_space, $id, '&gt;')),
+		<xsl:variable name="weight"
+			select="document(concat($request-uri, 'sparql?constraints=', encode-for-uri(concat('nm:type_series_item &lt;', //config/uri_space, $id, '&gt;')),
 			'&amp;template=avgMeasurement&amp;measurement=weight'))"/>
-		
+
 		<a name="charts"/>
 		<h3>
 			<xsl:value-of select="numishare:normalizeLabel('display_quantitative', $lang)"/>
 		</h3>
-		
+
 		<xsl:if test="number($axis) &gt; 0 or number($diameter) &gt; 0 or number($weight) &gt; 0">
 			<p>Average measurements for this coin type:</p>
 			<dl class="dl-horizontal">
@@ -608,7 +631,7 @@
 				</xsl:if>
 			</dl>
 		</xsl:if>
-		
+
 		<xsl:call-template name="measurementForm"/>
 	</xsl:template>
 
