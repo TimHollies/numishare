@@ -235,15 +235,15 @@
 				<xsl:choose>
 					<xsl:when test="$recordType = 'conceptual'">
 						<div class="row">
-							<div class="col-md-5">
+							<div class="col-md-6">
 								<xsl:call-template name="metadata-container"/>
 							</div>
-							<div class="col-md-2">
+							<!--<div class="col-md-2">
 								<div class="text-center">
 									<xsl:apply-templates select="$sparqlResult//object" mode="results"/>
 								</div>
-							</div>
-							<div class="col-md-5">
+							</div>-->
+							<div class="col-md-6">
 								<xsl:call-template name="map-container"/>
 							</div>
 						</div>
