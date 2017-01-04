@@ -290,13 +290,10 @@
 								<script type="text/javascript" src="{$include_path}/javascript/visualize_functions.js"/>
 
 								<!-- mapping -->
-								<script type="text/javascript" src="http://openlayers.org/api/2.12/OpenLayers.js"/>
-								<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.20&amp;sensor=false"/>
-								<script type="text/javascript" src="{$include_path}/javascript/mxn.js"/>
-								<script type="text/javascript" src="{$include_path}/javascript/timeline-2.3.0.js"/>
-								<link type="text/css" href="{$include_path}/css/timeline-2.3.0.css" rel="stylesheet"/>
-								<script type="text/javascript" src="{$include_path}/javascript/timemap_full.pack.js"/>
-								<script type="text/javascript" src="{$include_path}/javascript/param.js"/>
+								<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+								<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"/>					
+								<script type="text/javascript" src="{$include_path}/javascript/leaflet.ajax.min.js"/>
+								<script type="text/javascript" src="{$include_path}/javascript/display_map_functions.js"/>
 							</xsl:when>
 							<!-- hoard CSS and JS dependencies -->
 							<xsl:when test="$recordType='hoard'">
