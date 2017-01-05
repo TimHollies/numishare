@@ -307,11 +307,15 @@ select[name = "interval"],
 	margin-left:20px;
 }
 .thumbImage,
+.iiif-image,
 .flickrthumb{
 	margin:5px;
 }
-.thumbImage > img{
+.side-thumbnail {
 	max-width:120px;
+}
+.combined-thumbnail {
+    max-width:240px;
 }
 .quick_search{
 	width:250px;
@@ -432,7 +436,6 @@ button.multiselect{
 /* gallery image */
 .gi{
 	padding:0px 5px;
-	max-width:120px;
 }
 /*
   ***************************************
