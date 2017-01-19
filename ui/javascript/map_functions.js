@@ -144,13 +144,13 @@ $(document).ready(function () {
 	//multiselect facets
 	$('.multiselect').multiselect({
 		buttonWidth: '250px',
-		enableFiltering: true,
+		enableCaseInsensitiveFiltering: true,
 		maxHeight: 250,
 		buttonText: function (options, select) {
 			if (options.length == 0) {
-				return select.attr('title') + ' <b class="caret"></b>';
+				return select.attr('title');
 			} else if (options.length > 2) {
-				return select.attr('title') + ': ' + options.length + ' selected <b class="caret"></b>';
+				return select.attr('title') + ': ' + options.length;
 			} else {
 				var selected = '';
 				options.each(function () {
@@ -160,7 +160,7 @@ $(document).ready(function () {
 				if (label.length > 20) {
 					label = label.substr(0, 20) + '...';
 				}
-				return select.attr('title') + ': ' + label + ' <b class="caret"></b>';
+				return select.attr('title') + ': ' + label;
 			}
 		},
 		onChange: function (element, checked) {
@@ -292,6 +292,7 @@ $(document).ready(function () {
 				$('#results').html(data);
 			}).done(function () {
 				$('a.thumbImage').fancybox({
+					type: 'image',
 					beforeShow: function () {
 						this.title = '<a href="' + this.element.attr('id') + '">' + this.element.attr('title') + '</a>'
 					},
