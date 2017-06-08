@@ -3,6 +3,7 @@ combines hard-coded fancybox call from XSLT, condenses sort_results and quick_se
 */
 $(document).ready(function () {
 	$('a.thumbImage').fancybox({
+		type: 'image',
 		beforeShow: function () {
 			this.title = '<a href="' + this.element.attr('id') + '">' + this.element.attr('title') + '</a>'
 		},
@@ -11,6 +12,26 @@ $(document).ready(function () {
 				type: 'inside'
 			}
 		}
+	});
+	
+	//toggle divs
+	$('.toggle-button').click(function(){
+	           var id = '#' + $(this).attr('id').split('-')[1] + '-container';
+		if ($(this).children('span').hasClass('glyphicon-triangle-bottom')) {
+			$(this).children('span').removeClass('glyphicon-triangle-bottom');
+			$(this).children('span').addClass('glyphicon-triangle-right');
+		} else if ($(this).children('span').hasClass('glyphicon-triangle-right')) {
+			$(this).children('span').removeClass('glyphicon-triangle-right');
+			$(this).children('span').addClass('glyphicon-triangle-bottom');
+		} else if ($(this).children('span').hasClass('glyphicon-plus')) {
+			$(this).children('span').removeClass('glyphicon-plus');
+			$(this).children('span').addClass('glyphicon-minus');
+		} else if ($(this).children('span').hasClass('glyphicon-minus')) {
+			$(this).children('span').removeClass('glyphicon-minus');
+			$(this).children('span').addClass('glyphicon-plus');
+		}
+		$(id).toggle('fast');
+		return false;		
 	});
 	
 	$('.sortForm_categories') .change(function () {
@@ -68,19 +89,6 @@ $(document).ready(function () {
 			$('.sort_button') .prop('disabled', true);
 		}
 	}
-	
-	//toggle symbol div
-	$('#toggle-symbols').click(function(){
-		if ($(this).children('span').hasClass('glyphicon-triangle-bottom')) {
-			$(this).children('span').removeClass('glyphicon-triangle-bottom');
-			$(this).children('span').addClass('glyphicon-triangle-right');
-		} else {
-			$(this).children('span').removeClass('glyphicon-triangle-right');
-			$(this).children('span').addClass('glyphicon-triangle-bottom');
-		}
-		$('#symbol-container').toggle('fast');
-		return false;		
-	});
 	
 	$('#qs_form').submit(function () {
 		assembleQuery();
