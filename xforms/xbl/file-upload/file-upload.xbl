@@ -535,7 +535,7 @@
 
 						<!-- test for remotemagick echo -->
 						<xforms:submission id="test-remotemagick" method="post" replace="instance" instance="test-response" ref="instance('test-call')" action="http://localhost:8042/RPC2">
-							<xforms:setvalue ev:event="xforms-submit-error" ref="instance('control-instance')/remotemagick-available">false</xforms:setvalue>
+							<xforms:setvalue ev:event="xforms-submit-error" ref="instance('control-instance')/remotemagick-available">true</xforms:setvalue>
 						</xforms:submission>
 					</xforms:model>
 				</xforms:group>
