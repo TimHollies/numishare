@@ -8,6 +8,7 @@
 	xmlns:numishare="https://github.com/ewg118/numishare" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xbl:binding id="numishare-file-upload" element="numishare|file-upload">
 		<xbl:template>
+		<h2>hi</h2>
 			<xforms:group xbl:attr="model context ref bind" xxbl:scope="outer">
 				<xbl:content includes="xforms|label,xforms|help,xforms|hint,xforms|alert"/>
 				<xforms:group xxbl:scope="inner">
