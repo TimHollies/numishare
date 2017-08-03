@@ -33,7 +33,7 @@
 	
 	<p:processor name="oxf:unsafe-xslt">
 		<p:input name="request" href="#request"/>
-		<p:input name="data" href="aggregate('content', #data, #feature-view)"/>		
+		<p:input name="data" href="aggregate('content', #data)"/>		
 		<p:input name="config" href="../../../ui/xslt/pages/index.xsl"/>
 		<p:output name="data" ref="data"/>
 	</p:processor>

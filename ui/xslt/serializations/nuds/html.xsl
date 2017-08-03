@@ -168,7 +168,8 @@
 	<!-- whether there are coin types, mints, findspots, annotations, executed in XPL -->
 	<xsl:variable name="hasTypes" select="//res:sparql[1]/res:boolean" as="xs:boolean"/>
 	<xsl:variable name="hasFindspots" select="//res:sparql[2]/res:boolean" as="xs:boolean"/>
-	<xsl:variable name="hasAnnotations" as="xs:boolean">
+	<xsl:variable name="hasAnnotations" as="xs:boolean" select="false()"/>
+	<!--<xsl:variable name="hasAnnotations" as="xs:boolean">
 		<xsl:choose>
 			<xsl:when test="//config/annotation_sparql_endpoint">
 				<xsl:choose>
@@ -178,7 +179,7 @@
 			</xsl:when>
 			<xsl:otherwise>false</xsl:otherwise>				
 		</xsl:choose>		
-	</xsl:variable>
+	</xsl:variable>-->
 	<xsl:variable name="hasMints" as="xs:boolean">
 		<xsl:choose>
 			<xsl:when test="$rdf//nmo:Mint or descendant::*[contains(@xlink:href, 'geonames.org')]">true</xsl:when>

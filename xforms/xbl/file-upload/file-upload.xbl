@@ -7,18 +7,23 @@
 	xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:date="http://exslt.org/dates-and-times"
 	xmlns:numishare="https://github.com/ewg118/numishare" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xbl:binding id="numishare-file-upload" element="numishare|file-upload">
-		<xbl:template>	
+		<xbl:template>
+
+
 			<xforms:group xbl:attr="model context ref bind" xxbl:scope="outer">
 				<xbl:content includes="xforms|label,xforms|help,xforms|hint,xforms|alert"/>
-				<xforms:group xxbl:scope="inner">
-					<xforms:var name="binding" as="node()?">
+				<xforms:group xxbl:scope="inner">	
+
+				<xforms:var name="binding" as="node()?">
 						<xxforms:sequence select="." xxbl:scope="outer"/>
 					</xforms:var>
+	
 					<xforms:action ev:event="xforms-enabled" ev:target="#observer">
 						<xforms:insert context="instance('control-instance')" nodeset="collection-name" position="after"
 							origin="xxforms:call-xpl('oxf:/apps/numishare/xpl/get-authentication.xpl', 'dump', instance('dump'), 'data')"/>
 						<xforms:send submission="load-collections"/>
 					</xforms:action>
+					
 					<xforms:var name="created" select="current-dateTime()"/>
 					<!-- display warnings -->
 					<xforms:group ref="$binding[instance('flickr-response')/@stat='fail' and not(instance('control-instance')/remotemagick-available='false')]">
@@ -32,12 +37,13 @@
 							</div>
 						</div>
 					</xforms:group>
+
 					<xforms:group ref="$binding[instance('flickr-response')/@stat='ok' and instance('control-instance')/remotemagick-available='false']">
 						<div class="ui-widget">
 							<div class="ui-state-highlight ui-corner-all">
 								<p>
 									<span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"/>
-									<strong>Warning:</strong> Imagemagick is not running. Image uploads are disabled! </p>
+									<strong>Warning:</strong> Imagemagick is not running. Image uploads are disabled. </p>
 							</div>
 						</div>
 					</xforms:group>
@@ -52,8 +58,9 @@
 							</div>
 						</div>
 					</xforms:group>
+
 					<xforms:group ref="$binding[not(string(mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href))]">
-						<div>
+						<div>							
 							<xforms:select1 ref="instance('interface-type')" appearance="full">
 								<xforms:label>Image Type</xforms:label>
 								<xforms:item>
@@ -321,6 +328,9 @@
 						<xforms:setvalue ref="instance('interface-type')" value="'flickr'" if="instance('control-instance')/remotemagick-available = 'false' and instance('flickr-response')/@stat='ok'"/>
 						<xforms:toggle case="error" if="instance('control-instance')/remotemagick-available = 'false' and not(instance('flickr-response')/@stat='ok')"/>
 					</xforms:action>
+
+
+
 					<!-- ********************************************************************** -->
 					<!-- ***********************  DIALOG INTERNAL MODEL *********************** -->
 					<xforms:model id="file-upload-model" xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -513,10 +523,14 @@
 							<xforms:message ev:event="xforms-submit-error" level="modal">Unable to load Numishare collections list.</xforms:message>
 						</xforms:submission>
 
+						<!--{instance('exist-config')/url}{instance('control-instance')/collection-name}/config.xml-->
+						<!--http://localhost:8080/exist/rest/db/> -->
 						<!-- get image dimensions from config -->
-						<xforms:submission id="load-config" serialization="none" method="get" action="{instance('exist-config')/url}{instance('control-instance')/collection-name}/config.xml"
+						<!-- TODO: THE COLLECTION LIST IS NOT BEING CORRECTLY LOADED -->
+						<xforms:submission id="load-config" serialization="none" method="get" action="{instance('exist-config')/url}tokens-project/config.xml"
 							xxforms:username="{instance('exist-config')/username}" xxforms:password="{instance('exist-config')/password}" replace="instance" instance="config">
-							<xforms:message ev:event="xforms-submit-error" level="modal">Unable to load Numishare configuration</xforms:message>
+							<xforms:message ev:event="xforms-submit-error" level="modal" ref="instance('control-instance')/collection-name">
+							</xforms:message>
 
 							<!-- if there is a string for flickr_api_key, execute the test API query to certify that the key is valid. -->
 							<xforms:send submission="test-for-echo" ev:event="xforms-submit-done" if="string(instance('config')/flickr_api_key)"/>
@@ -535,10 +549,12 @@
 
 						<!-- test for remotemagick echo -->
 						<xforms:submission id="test-remotemagick" method="post" replace="instance" instance="test-response" ref="instance('test-call')" action="http://localhost:8042/RPC2">
-							<xforms:setvalue ev:event="xforms-submit-error" ref="instance('control-instance')/remotemagick-available">true</xforms:setvalue>
+							<xforms:setvalue ev:event="xforms-submit-error" ref="instance('control-instance')/remotemagick-available">false</xforms:setvalue>
 						</xforms:submission>
 					</xforms:model>
 				</xforms:group>
+
+
 			</xforms:group>
 		</xbl:template>
 	</xbl:binding>
