@@ -35,7 +35,7 @@
 							<div class="ui-state-highlight ui-corner-all">
 								<p>
 									<span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"/>
-									<strong>Warning:</strong> An image is required before the record can be saved. 																																																																																																																																																																																																																																																																																																																																																																
+									<strong>Warning:</strong> An image is required before the record can be saved. 																																																																																																																																																																																																																																																																																																																																																																								
 								</p>
 							</div>
 						</div>
@@ -58,7 +58,7 @@
 									<xforms:setvalue ref="$binding/mets:file[@USE='reference']/mets:FLocat/@xlink:href" value="'test'"/>
 									<xforms:setvalue ref="$binding/mets:file[@USE='archive']/mets:FLocat/@xlink:href" value="xxforms:call-xpl('oxf:/apps/numishare/xpl/test.xpl', 'testdata', $binding)"/>
 									<!--Set writing  -->
-									<xforms:setvalue ref="instance('url-generator')/url" value="instance('files-instance')/file"/>  
+									<xforms:setvalue ref="instance('url-generator')/url" value="instance('files-instance')/file"/>
 									<!--write file  -->
 									<xforms:insert context="instance('dump')" origin="xxforms:call-xpl('oxf:/apps/numishare/xpl/archive-file.xpl', ('file', 'serialize-config', 'dump'), instance('files-instance')/file, instance('serialize-config'), instance('dump')), 'data')"/>
 								</xforms:action>
@@ -176,7 +176,7 @@
 						</xforms:instance>
 						<xforms:instance id="interface-type">
 							<type 
-								xmlns="">upload																																																																																																																																																																																																																																																																																																																				
+								xmlns="">upload																																																																																																																																																																																																																																																																																																																											
 							</type>
 						</xforms:instance>
 						<xforms:instance id="photo_id">
