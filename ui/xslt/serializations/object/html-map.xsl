@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nuds="http://nomisma.org/nuds"
-	xmlns:nh="http://nomisma.org/nudsHoard" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:numishare="https://github.com/ewg118/numishare"
+<xsl:stylesheet 
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:nuds="http://nomisma.org/nuds" 
+	xmlns:nh="http://nomisma.org/nudsHoard" 
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:numishare="https://github.com/ewg118/numishare" 
 	xmlns:res="http://www.w3.org/2005/sparql-results#" exclude-result-prefixes="#all" version="2.0">
 	<xsl:include href="../../functions.xsl"/>
 	<!-- URL params -->
@@ -30,13 +35,10 @@
 		</xsl:choose>
 	</xsl:variable>
 	<xsl:variable name="id" select="normalize-space(//*[local-name() = 'recordId'])"/>
-
 	<xsl:variable name="hasFindspots" select="if (doc('input:hasFindspots')//res:sparql/res:boolean) then doc('input:hasFindspots')//res:sparql/res:boolean else false()" as="xs:boolean"/>
-
 	<xsl:template match="/">
 		<xsl:choose>
-			<xsl:when
-				test="count(descendant::*:otherRecordId[@semantic = 'dcterms:isReplacedBy']) &gt; 1 and descendant::*:control/*:maintenanceStatus = 'cancelledSplit'">
+			<xsl:when test="count(descendant::*:otherRecordId[@semantic = 'dcterms:isReplacedBy']) &gt; 1 and descendant::*:control/*:maintenanceStatus = 'cancelledSplit'">
 				<html>
 					<head>
 						<xsl:call-template name="generic_head"/>
@@ -54,8 +56,7 @@
 									<p>This resource has been split and supplanted by the following new URIs:</p>
 									<ul>
 										<xsl:for-each select="descendant::*:otherRecordId[@semantic = 'dcterms:isReplacedBy']">
-											<xsl:variable name="uri"
-												select="
+											<xsl:variable name="uri" select="
 													if (contains(., 'http://')) then
 														.
 													else
@@ -89,21 +90,20 @@
 					<!-- coin-type CSS and JS dependencies -->
 					<xsl:when test="$recordType = 'conceptual'">
 						<xsl:if test="$hasFindspots = true()">
-							<script type="text/javascript" src="http://openlayers.org/api/2.12/OpenLayers.js"/>
-							<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.20&amp;sensor=false"/>
+							<script type="text/javascript" src="https://openlayers.org/api/2.12/OpenLayers.js"/>
+							<script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3.20&amp;sensor=false"/>
 							<script type="text/javascript" src="{$include_path}/javascript/mxn.js"/>
 							<script type="text/javascript" src="{$include_path}/javascript/timeline-2.3.0.js"/>
 							<link type="text/css" href="{$include_path}/css/timeline-2.3.0.css" rel="stylesheet"/>
 							<script type="text/javascript" src="{$include_path}/javascript/timemap_full.pack.js"/>
 							<script type="text/javascript" src="{$include_path}/javascript/param.js"/>
 						</xsl:if>
-						
 						<script type="text/javascript" src="{$include_path}/javascript/display_map_functions.js"/>
 					</xsl:when>
 					<!-- hoard CSS and JS dependencies -->
 					<xsl:when test="$recordType = 'hoard'">
-						<script type="text/javascript" src="http://openlayers.org/api/2.12/OpenLayers.js"/>
-						<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.20&amp;sensor=false"/>
+						<script type="text/javascript" src="https://openlayers.org/api/2.12/OpenLayers.js"/>
+						<script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3.20&amp;sensor=false"/>
 						<script type="text/javascript" src="{$include_path}/javascript/mxn.js"/>
 						<script type="text/javascript" src="{$include_path}/javascript/timeline-2.3.0.js"/>
 						<link type="text/css" href="{$include_path}/css/timeline-2.3.0.css" rel="stylesheet"/>
@@ -151,7 +151,9 @@
 									</table>
 								</div>
 								<small>
-									<a href="{$url}id/{$id}"><span class="glyphicon glyphicon-arrow-left"/>Return</a>
+									<a href="{$url}id/{$id}">
+										<span class="glyphicon glyphicon-arrow-left"/>Return
+									</a>
 								</small>
 							</div>
 							<xsl:choose>
@@ -163,11 +165,9 @@
 										<xsl:when test="$hasFindspots = true()">
 											<div id="timemap" style="height:100%">
 												<div id="mapcontainer" class="fullscreen">
-													<div id="map"/>
-												</div>
+													<div id="map"/></div>
 												<div id="timelinecontainer">
-													<div id="timeline"/>
-												</div>
+													<div id="timeline"/></div>
 											</div>
 										</xsl:when>
 										<xsl:otherwise>
@@ -178,11 +178,9 @@
 								<xsl:when test="$recordType='hoard'">
 									<div id="timemap" style="height:100%">
 										<div id="mapcontainer" class="fullscreen">
-											<div id="map"/>
-										</div>
+											<div id="map"/></div>
 										<div id="timelinecontainer">
-											<div id="timeline"/>
-										</div>
+											<div id="timeline"/></div>
 									</div>
 								</xsl:when>
 							</xsl:choose>
@@ -249,7 +247,6 @@
 				<xsl:value-of select="//config/google_analytics"/>
 			</script>
 		</xsl:if>
-
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@0.7.7/dist/leaflet.css"/>
 		<script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"/>
 		<script type="text/javascript" src="{$include_path}/javascript/leaflet.ajax.min.js"/>

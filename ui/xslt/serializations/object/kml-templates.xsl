@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:skos="http://www.w3.org/2004/02/skos/core#"
-	xmlns:nm="http://nomisma.org/id/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:nuds="http://nomisma.org/nuds" xmlns:nh="http://nomisma.org/nudsHoard"
-	xmlns:nmo="http://nomisma.org/ontology#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:numishare="https://github.com/ewg118/numishare"
-	exclude-result-prefixes="#all" version="2.0">
+<xsl:stylesheet 
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" 
+	xmlns:skos="http://www.w3.org/2004/02/skos/core#" 
+	xmlns:nm="http://nomisma.org/id/" 
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+	xmlns:nuds="http://nomisma.org/nuds" 
+	xmlns:nh="http://nomisma.org/nudsHoard" 
+	xmlns:nmo="http://nomisma.org/ontology#" 
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:numishare="https://github.com/ewg118/numishare" exclude-result-prefixes="#all" version="2.0">
 	<xsl:template name="kml">
-		<kml xmlns="http://earth.google.com/kml/2.0">
+		<kml 
+			xmlns="http://earth.google.com/kml/2.0">
 			<Document>
 				<Style id="mint">
 					<IconStyle>
 						<scale>1</scale>
 						<hotSpot x="0.5" y="0" xunits="fraction" yunits="fraction"/>
 						<Icon>
-							<href>http://maps.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png</href>
+							<href>https://maps.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png</href>
 						</Icon>
 					</IconStyle>
 				</Style>
@@ -20,7 +29,7 @@
 						<scale>1</scale>
 						<hotSpot x="0.5" y="0" xunits="fraction" yunits="fraction"/>
 						<Icon>
-							<href>http://maps.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png</href>
+							<href>https://maps.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png</href>
 						</Icon>
 					</IconStyle>
 				</Style>
@@ -29,7 +38,7 @@
 						<scale>1</scale>
 						<hotSpot x="0.5" y="0" xunits="fraction" yunits="fraction"/>
 						<Icon>
-							<href>http://maps.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png</href>
+							<href>https://maps.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png</href>
 						</Icon>
 					</IconStyle>
 				</Style>
@@ -38,7 +47,7 @@
 						<scale>1</scale>
 						<hotSpot x="0.5" y="0" xunits="fraction" yunits="fraction"/>
 						<Icon>
-							<href>http://maps.google.com/intl/en_us/mapfiles/ms/micons/green-dot.png</href>
+							<href>https://maps.google.com/intl/en_us/mapfiles/ms/micons/green-dot.png</href>
 						</Icon>
 					</IconStyle>
 				</Style>
@@ -135,7 +144,8 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		<Placemark xmlns="http://earth.google.com/kml/2.0">
+		<Placemark 
+			xmlns="http://earth.google.com/kml/2.0">
 			<name>
 				<xsl:value-of select="$label"/>
 			</name>
@@ -162,7 +172,11 @@
 				<xsl:otherwise>
 					<description>
 						<![CDATA[
-          					<span><a href="]]><xsl:value-of select="$href"/><![CDATA[" target="_blank">]]><xsl:value-of select="$label"/><![CDATA[</a>]]>
+          					<span><a href="]]>
+						<xsl:value-of select="$href"/>
+						<![CDATA[" target="_blank">]]>
+						<xsl:value-of select="$label"/>
+						<![CDATA[</a>]]>
 						<![CDATA[</span>
         				]]>
 					</description>
@@ -198,7 +212,6 @@
 				</xsl:when>
 				<xsl:when test="contains($href, 'coinhoards.org')">
 					<xsl:variable name="findspotUri" select="$rdf//*[@rdf:about=$href]/nmo:hasFindspot/@rdf:resource"/>
-
 					<xsl:if test="string-length($findspotUri) &gt; 0">
 						<Point>
 							<coordinates>
