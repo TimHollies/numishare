@@ -3,7 +3,7 @@
 	function: Enable the user to upload an image file or select a flickr image URI.  If the former option is chosen, base64-encoded images are sent to remotemagick.py for resizing into thumbnails and reference images by imagemagick.
 -->
 <xbl:xbl 
-	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:xhtml="http://www.w3.org/1999/xhtml" 
 	xmlns:xforms="http://www.w3.org/2002/xforms" 
 	xmlns:ev="http://www.w3.org/2001/xml-events" 
 	xmlns:xxforms="http://orbeon.org/oxf/xml/xforms" 
@@ -31,70 +31,37 @@
 					<xforms:var name="created" select="current-dateTime()"/>
 					<!-- display warnings -->
 					<xforms:group ref="$binding[not(string(mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href))]">
-						<div class="ui-widget">
-							<div class="ui-state-highlight ui-corner-all">
-								<p>
-									<span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"/>
-									<strong>Warning:</strong> An image is required before the record can be saved. 																																																																																																																																																																																																																																																																																																																																																																								
-								</p>
-							</div>
-						</div>
+						<xhtml:div class="ui-widget">
+							<xhtml:div class="ui-state-highlight ui-corner-all">
+								<xhtml:p>
+									<xhtml:span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"/>
+									<xhtml:strong>Warning:</xhtml:strong> An image is required before the record can be saved. 																																																																																																																																																																																																																																																																																																																																																																																																								
+								</xhtml:p>
+							</xhtml:div>
+						</xhtml:div>
 					</xforms:group>
 					<xforms:group ref="$binding[not(string(mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href))]">
-						<h4>Upload</h4>
-						<div style="margin:10px 0 20px 0">
+						<xhtml:h4>Upload</xhtml:h4>
+						<xhtml:div style="margin:10px 0 20px 0">
 							<fr:image-attachment ref="instance('files-instance')/file" xxforms:size="60">
 								<xforms:filename ref="@filename"/>
 								<xforms:mediatype ref="@mediatype"/>
 								<xxforms:size ref="@size"/>
 							</fr:image-attachment>
-						</div>
+						</xhtml:div>
 						<xforms:trigger>
 							<xforms:label>Upload</xforms:label>
 							<xforms:action ev:event="DOMActivate">
 								<xforms:action ev:event="xxforms-upload-done" if="contains(instance('files-instance')/file/@mediatype, 'image/')">
-									<!--Smoke  -->
-									<xforms:setvalue ref="$binding/mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href" value="'test'"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='reference']/mets:FLocat/@xlink:href" value="'test'"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='archive']/mets:FLocat/@xlink:href" value="xxforms:call-xpl('oxf:/apps/numishare/xpl/test.xpl', 'testdata', $binding)"/>
-									<!--Set writing  -->
+								
+									<xforms:setvalue ref="$binding/mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href" value="instance('files-instance')/file/@size"/>
+									<xforms:setvalue ref="$binding/mets:file[@USE='reference']/mets:FLocat/@xlink:href" value="instance('files-instance')/file"/>
+							
 									<xforms:setvalue ref="instance('url-generator')/url" value="instance('files-instance')/file"/>
-									<!--write file  -->
-									<xforms:insert context="instance('dump')" origin="xxforms:call-xpl('oxf:/apps/numishare/xpl/archive-file.xpl', ('file', 'serialize-config', 'dump'), instance('files-instance')/file, instance('serialize-config'), instance('dump')), 'data')"/>
+							
+									<xforms:insert context="instance('dump')" origin="xxforms:call-xpl('oxf:/apps/numishare/xpl/archive-file.xpl', 'file-url', instance('files-instance')/file , 'data')"/> 
 								</xforms:action>
-								<xforms:action ev:event="xforms-submit-done" if="contains(instance('files-instance')/file/@mediatype, 'image/')">
-									<!-- set URL -->
-									<xforms:setvalue ref="$binding/mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href" value="concat('media/thumbnail/', substring-after(substring-before(instance('files-instance')/file, '.tmp'), 'xforms_upload_'), '.', substring-after(instance('files-instance')/file/@mediatype, 'image/'))"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='reference']/mets:FLocat/@xlink:href" value="concat('media/reference/', substring-after(substring-before(instance('files-instance')/file, '.tmp'), 'xforms_upload_'), '.', substring-after(instance('files-instance')/file/@mediatype, 'image/'))"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='archive']/mets:FLocat/@xlink:href" value="concat('media/archive/', substring-after(substring-before(instance('files-instance')/file, '.tmp'), 'xforms_upload_'), '.', substring-after(instance('files-instance')/file/@mediatype, 'image/'))"/>
-									<!-- set OWNERID, original filename -->
-									<xforms:setvalue ref="$binding/mets:file[@USE='thumbnail']/@OWNERID" value="instance('files-instance')/file/@filename"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='reference']/@OWNERID" value="instance('files-instance')/file/@filename"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='archive']/@OWNERID" value="instance('files-instance')/file/@filename"/>
-									<!-- set MIMETYPE -->
-									<xforms:setvalue ref="$binding/mets:file[@USE='thumbnail']/@MIMETYPE" value="instance('files-instance')/file/@mediatype"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='reference']/@MIMETYPE" value="instance('files-instance')/file/@mediatype"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='archive']/@MIMETYPE" value="instance('files-instance')/file/@mediatype"/>
-									<!-- set CREATED -->
-									<xforms:setvalue ref="$binding/mets:file[@USE='thumbnail']/@CREATED" value="$created"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='reference']/@CREATED" value="$created"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='archive']/@CREATED" value="$created"/>
-									<!-- set ID -->
-									<xforms:setvalue ref="$binding/@ID" value="concat('n_', substring(string(digest( string( random( true ) ), 'MD5', 'hex' )), 1, 8))"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='thumbnail']/@ID" value="concat('n_', substring(string(digest( string( random( true ) ), 'MD5', 'hex' )), 1, 8))"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='reference']/@ID" value="concat('n_', substring(string(digest( string( random( true ) ), 'MD5', 'hex' )), 1, 8))"/>
-									<xforms:setvalue ref="$binding/mets:file[@USE='archive']/@ID" value="concat('n_', substring(string(digest( string( random( true ) ), 'MD5', 'hex' )), 1, 8))"/>
-									<!-- get base64 encoded file and send it to xml-rpc -->
-									<xforms:setvalue ref="instance('url-generator')/url" value="instance('files-instance')/file"/>
-									<!--  -->
-									<xforms:setvalue ref="instance('serialize-config')/directory" value="instance('config')/images/absolute_path"/>
-									<xforms:setvalue ref="instance('serialize-config')/file" value="concat(substring-after(substring-before(instance('files-instance')/file, '.tmp'), 'xforms_upload_'), '.', substring-after(instance('files-instance')/file/@mediatype, 'image/'))"/>
-									<!-- copy file from temp to archive folder -->
-									<xforms:insert context="instance('dump')" origin="xxforms:call-xpl('oxf:/apps/numishare/xpl/archive-file.xpl', ('file', 'serialize-config', 'dump'), (instance('url-generator'), instance('serialize-config'), instance('dump')), 'data')"/>
-									<!-- clean up -->
-									<xforms:delete context="instance('base64-doc')/document"/>
-									<xforms:delete context="instance('dump')/document"/>
-								</xforms:action>
+							
 							</xforms:action>
 						</xforms:trigger>
 						<xforms:trigger>
@@ -108,19 +75,19 @@
 					<xforms:group ref="$binding[string-length(mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href) &gt; 0]">
 						<!-- concatonate thumbnail path -->
 						<xforms:var name="thumbnail-path" select="if (contains(mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href, 'http://')) then mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href else concat(instance('config')/url, mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href)"/>
-						<div class="subsection">
-							<h4>Image</h4>
+						<xhtml:div class="subsection">
+							<xhtml:h4>Image</xhtml:h4>
 							<xforms:trigger appearance="minimal">
 								<xforms:action ev:event="DOMActivate">
 									<xforms:dispatch target="delete-image-dialog" name="fr-show" if="not(contains(mets:file[@USE='thumbnail']/mets:FLocat/@xlink:href, 'flickr.com'))"/>
 								</xforms:action>
 								<xforms:label>
-									<span class="glyphicon glyphicon-remove"/>
+									<xhtml:span class="glyphicon glyphicon-remove"/>
 								</xforms:label>
 							</xforms:trigger>
-							<div>
+							<xhtml:div>
 								<xforms:output mediatype="image/*" value="$thumbnail-path"/>
-							</div>
+							</xhtml:div>
 							<fr:alert-dialog id="delete-image-dialog">
 								<fr:label>Delete Image</fr:label>
 								<fr:message> Are you certain you wish to remove this image? Its reference will be removed from the document and files from the server. </fr:message>
@@ -142,7 +109,7 @@
 									</xforms:action>
 								</fr:positive-choice>
 							</fr:alert-dialog>
-						</div>
+						</xhtml:div>
 					</xforms:group>
 					<!-- ********************************************************************** -->
 					<!-- ***********************  DIALOG INTERNAL MODEL *********************** -->
@@ -176,7 +143,7 @@
 						</xforms:instance>
 						<xforms:instance id="interface-type">
 							<type 
-								xmlns="">upload																																																																																																																																																																																																																																																																																																																											
+								xmlns="">upload																																																																																																																																																																																																																																																																																																																																																							
 							</type>
 						</xforms:instance>
 						<xforms:instance id="photo_id">
@@ -196,8 +163,7 @@
 						</xforms:instance>
 						<!-- image uploading, base64 encoding and xml-rpc payload -->
 						<xforms:instance id="url-generator">
-							<config 
-								xmlns="">
+							<config>
 								<url/>
 								<content-type>image/jpeg</content-type>
 							</config>
